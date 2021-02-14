@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 public class LogCsvReader {
 
@@ -26,7 +27,7 @@ public class LogCsvReader {
 	private long _filePointer;
 	private LogTailListener tailer;
 
-	protected int csvInd = 0;
+	protected int csvInd = -1;
 
 	private File jsonFile;
 
@@ -37,10 +38,6 @@ public class LogCsvReader {
 		this.jsonFile = jsonFile;
 		this.tailer = tailer;
 	}
-
-//	public CSVRecord next() {
-//		
-//	}
 
 	public void run() {
 		try {
@@ -65,27 +62,15 @@ public class LogCsvReader {
 						InputStream is = Channels.newInputStream(raf.getChannel());
 						CSVReader reader = new CSVReader(new InputStreamReader(is));
 
-						String[] dd = reader.readNext();
+						String[] dd = readCsvLine(reader);
 						while (dd != null) {
 							if (csvInd == targetCsvInd) {
 								this.tailer.appendCsv(this, dd);
 								this.targetCsvInd++;
 							}
-							csvInd++;
-							dd = reader.readNext();
+							dd = readCsvLine(reader);
 						}
 
-//						String line = null;
-//						while ((line = raf.readLine()) != null) {
-//							line=line.replaceAll(System.lineSeparator(), "\t");
-//							System.out.println(line);
-//							Reader in = new StringReader(line);
-//							CSVParser parser = new CSVParser(in, CSVFormat.DEFAULT);
-//							List<CSVRecord> list = parser.getRecords();
-//							for (CSVRecord csvRecord : list) {
-//								this.tailer.appendCsv(this, csvRecord);
-//							}
-//						}
 						_filePointer = raf.getFilePointer();
 					}
 				}
@@ -95,6 +80,11 @@ public class LogCsvReader {
 			tailer.error(this, "Fatal error reading log file, log tailing has stopped.", e);
 		}
 		// dispose();
+	}
+
+	protected String[] readCsvLine(CSVReader reader) throws CsvValidationException, IOException {
+		csvInd++;
+		return reader.readNext();
 	}
 
 	private int resumeToInd() {

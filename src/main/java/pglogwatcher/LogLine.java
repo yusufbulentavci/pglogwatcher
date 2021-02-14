@@ -37,11 +37,18 @@ public class LogLine {
 	private BigDecimal parseDur;
 	Integer virtual_session_id;
 
-	int csvInd;
+	Integer csvInd;
 
 	String tz;
 
 	private String connection_from_port;
+	
+	public LogLine(Integer csvInd, String error_severity, String command_tag, String message) {
+		this.csvInd=csvInd;
+		this.error_severity=error_severity;
+		this.command_tag=command_tag;
+		this.message=message;
+	}
 
 	// 2021-02-08 10:31:38.693
 	// yyyy-MM-dd HH:mm:ss.SSS
@@ -232,11 +239,15 @@ public class LogLine {
 			ret.put("parse_duration", parseDur);
 		}
 		if (this.virtual_session_id != null) {
-			ret.put("virtual_session_id", virtual_session_id + fileName);
+			ret.put("virtual_session_id", virtual_session_id);
 		}
-		ret.put("postgresql.log.timezone", tz);
+		if(tz!=null)
+			ret.put("postgresql.log.timezone", tz);
 
-		ret.put("csv_ind", csvInd);
+		if(csvInd!=null)
+			ret.put("csv_ind", csvInd);
+		
+		ret.put("csv", fileName);
 
 		return ret;
 	}

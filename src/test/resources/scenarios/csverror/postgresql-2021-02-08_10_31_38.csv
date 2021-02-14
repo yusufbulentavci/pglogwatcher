@@ -1,0 +1,7 @@
+2021-02-08 10:31:38.692 +03,"bank_rw","trdb",14942,"10.150.151.154:35608",6020e267.3a5e,16853,"idle",2021-02-08 10:04:07 +03,6/54420,0,LOG,00000,"statement: SET DateStyle='ISO';",,,,,,,,"exec_simple_query, postgres.c:1045",""
+2021-02-08 10:31:38.692 +03,"bank_rw","trdb",14942,"10.150.151.154:35608",6020e267.3a5e,16854,"SET",2021-02-08 10:04:07 +03,6/0,0,LOG,00000,"duration: 0.088 ms",,,,,,,,"exec_simple_query, postgres.c:1289",""
+2021-02-08 10:31:38.693 +03,"bank_rw
+2021-02-08 10:31:38.693 +03,"bank_rw","trdb",14942,"10.150.151.154:35608",6020e267.3a5e,16856,"BIND",2021-02-08 10:04:07 +03,6/54421,0,LOG,00000,"duration: 0.007 ms  bind <unnamed>: SET extra_float_digits = 3",,,,,,,,"exec_bind_message, postgres.c:1930",""
+2021-02-08 10:31:38.693 +03,"bank_rw","trdb",14942,"10.150.151.154:35608",6020e267.3a5e,16857,"SET",2021-02-08 10:04:07 +03,6/54421,0,LOG,00000,"execute <unnamed>: SET extra_float_digits = 3",,,,,,,,"exec_execute_message, postgres.c:2065",""
+2021-02-08 10:31:38.693 +03,"bank_rw","trdb",14942,"10.150.151.154:35608",6020e267.3a5e,16858,"SET",2021-02-08 10:04:07 +03,6/54421,0,LOG,00000,"duration: 0.022 ms",,,,,,,,"exec_execute_message, postgres.c:2140",""
+2021-02-08 10:31:38.694 +03,"bank_rw","trdb",14942,"10.150.151.154:35608",6020e267.3a5e,16859,"PARSE",2021-02-08 10:04:07 +03,6/54422,0,LOG,00000,"duration: 0.013 ms  parse <unnamed>: SET application_name = 'PostgreSQL JDBC Driver'",,,,,,,,"exec_parse_message, postgres.c:1560",""

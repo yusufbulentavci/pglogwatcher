@@ -50,7 +50,7 @@ public class LogDir {
 		logger.info("Starting:" + dir);
 		init(dir);
 		while (true) {
-			if (!switchFile(true)) {
+			if (!switchFile(true, false)) {
 				if (switchFileCount != -1 && switchFileCount == 0) {
 					logger.info("Dont wait, leaving...." + this.switchFileCount);
 					break;
@@ -70,7 +70,7 @@ public class LogDir {
 
 					@Override
 					public boolean checkRollover() {
-						return LogDir.this.switchFile(false);
+						return LogDir.this.switchFile(false, logFile.error);
 					}
 				});
 				logger.info("Ends working on:" + processCsvFileName);
@@ -94,7 +94,7 @@ public class LogDir {
 //		}
 	}
 
-	public boolean switchFile(boolean makeChange) {
+	public boolean switchFile(boolean makeChange, boolean error) {
 		String[] allCsvs = logDir.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {

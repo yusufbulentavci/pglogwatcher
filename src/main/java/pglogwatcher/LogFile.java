@@ -23,6 +23,8 @@ public class LogFile {
 
 	private int sleepForTailCount;
 
+	protected boolean error=false;
+
 	public LogFile(File logDir, String csvFile, int sleepForTailCount) {
 		this.logDir = logDir;
 		this.csvFile = csvFile;
@@ -55,11 +57,17 @@ public class LogFile {
 			@Override
 			public void fileErrorModified(LogCsvReader logCsvReader) {
 				logger.error("RR");
+				LogFile.this.error = true;
+				LogLine ll=new LogLine(logCsvReader.csvInd, "ERROR", "LOG_CSV_PARSE", "csv file modified");
+				processNoSession(ll);
 			}
 
 			@Override
 			public void error(LogCsvReader logCsvReader, String string, Exception e) {
 				logger.error("RR:" + string, e);
+				LogFile.this.error = true;
+				LogLine ll=new LogLine(logCsvReader.csvInd, "ERROR", "LOG_CSV_PARSE", string);
+				processNoSession(ll);
 			}
 
 			@Override
