@@ -30,15 +30,14 @@ public class LogWriter {
 		this.file = new File(dir, jsonFileName);
 		this.csvFile = new File(dir, csvFileName);
 		this.csvFileDone = new File(dir, csvFileName + "-done");
-
-		if (this.file.exists()) {
-			Integer resumeInd = resumeIndex();
-			if (resumeInd == null || resumeInd == 0) {
-				this.file.delete();
-			}
-		}
-//		
-//		this.fileTmp = new File(dir,fnTmp);
+//
+//		if (this.file.exists()) {
+//			Integer resumeInd = resumeIndex();
+//			if (resumeInd == null || resumeInd == 0) {
+//				this.file.delete();
+//			}
+//		}
+		
 		try {
 			this.fileWriter = new FileWriter(file, true);
 		} catch (IOException e) {
@@ -48,27 +47,30 @@ public class LogWriter {
 
 	}
 
-	private Integer resumeIndex() {
-		try (BufferedReader br = new BufferedReader(new FileReader(file));) {
-
-			String lastLine = br.readLine();
-			String prevLine = null;
-			while (lastLine != null) {
-				prevLine = lastLine.length()==0?prevLine:lastLine;
-				lastLine = br.readLine();
-			}
-			if (prevLine == null) {
-				return 0;
-			}
-			
-			JSONObject jo = new JSONObject(prevLine);
-
-			return jo.optInt("log-ind");
-		} catch (IOException e) {
-			logger.error("Failed resume index", e);
-			return null;
-		}
-	}
+//	private Integer resumeIndex() {
+//		String prevLine = null;
+//		try (BufferedReader br = new BufferedReader(new FileReader(file));) {
+//
+//			String lastLine = br.readLine();
+//			while (lastLine != null) {
+//				prevLine = lastLine.length() == 0 ? prevLine : lastLine;
+//				lastLine = br.readLine();
+//			}
+//			if (prevLine == null) {
+//				return 0;
+//			}
+//
+//			JSONObject jo = new JSONObject(prevLine);
+//
+//			return jo.optInt("csv-ind");
+//		} catch (IOException e) {
+//			if (prevLine == null)
+//				logger.error("Failed resume index:", e);
+//			else
+//				logger.error("Failed resume index:"+prevLine, e);
+//			return null;
+//		}
+//	}
 
 	public void write(LogLine ll) {
 //		logger.info(ll.toJson(fn).toString());

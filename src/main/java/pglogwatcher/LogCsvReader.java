@@ -43,7 +43,7 @@ public class LogCsvReader {
 		try {
 
 			if (jsonFile.exists()) {
-				targetCsvInd = resumeToInd();
+				resumeToInd();
 			}
 
 			while (keepRunning) {
@@ -87,21 +87,18 @@ public class LogCsvReader {
 		return reader.readNext();
 	}
 
-	private int resumeToInd() {
+	private void resumeToInd() {
 		try (BufferedReader bf = new BufferedReader(new FileReader(jsonFile))) {
 			String line = bf.readLine();
 			while (line != null) {
 				JSONObject jo = new JSONObject(line);
-				targetCsvInd = jo.getInt("csv_ind");
+				targetCsvInd = jo.getInt("csv_ind")+1;
+				line = bf.readLine();
 			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			targetCsvInd=0;
+			logger.error("Resuming failed after csv_ind:"+targetCsvInd, e);
 		}
-		return 0;
 	}
 
 	public void terminate() {

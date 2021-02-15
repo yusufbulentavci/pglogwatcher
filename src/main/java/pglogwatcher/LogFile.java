@@ -32,12 +32,12 @@ public class LogFile {
 		this.sleepForTailCount = sleepForTailCount;
 	}
 
-	void process(DirState dirState) {
+	void process(final DirState dirState) {
 
 		this.f = new File(logDir, csvFile);
 		this.logWriter = new LogWriter(logDir, jsonFile, csvFile);
 
-		LogCsvReader reader = new LogCsvReader(f, new File(jsonFile), new LogTailListener() {
+		LogCsvReader reader = new LogCsvReader(f, new File(logDir, jsonFile), new LogTailListener() {
 			PgConnection using = null;
 
 			@Override

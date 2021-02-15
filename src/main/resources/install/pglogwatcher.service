@@ -1,0 +1,13 @@
+[Unit]
+Description=Postgresql Log Watcher
+
+[Service]
+WorkingDirectory=/tmp
+ExecStart=java -cp /var/lib/pgsql/pglogwatcher-1.0.5-jar-with-dependencies.jar pg.App --dir=/pgdata/log   >> /pgdata/log/pglogwatcher.out  2>&1 
+User=postgres
+Type=simple
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

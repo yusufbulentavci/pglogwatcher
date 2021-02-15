@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.List;
 
@@ -15,8 +14,6 @@ import org.junit.Test;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
-
-import pglogwatcher.LogDir;
 
 public class RolloverTest extends ScenarioTest {
 
