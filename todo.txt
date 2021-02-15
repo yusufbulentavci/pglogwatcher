@@ -1,0 +1,4 @@
+- java -jar ile calisma
+- konfigurasyon dosyasi
+- konfig param validation
+- log start tailing

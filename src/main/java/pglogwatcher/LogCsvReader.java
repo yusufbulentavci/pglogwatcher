@@ -12,6 +12,7 @@ import java.nio.channels.Channels;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.opencsv.CSVReader;
@@ -47,7 +48,11 @@ public class LogCsvReader {
 			}
 
 			while (keepRunning) {
-				Thread.sleep(_updateInterval);
+				try {
+					Thread.sleep(_updateInterval);
+				} catch (Exception e) {
+					continue;
+				}
 				long len = csvFile.length();
 
 				if (len < _filePointer) {
@@ -89,15 +94,22 @@ public class LogCsvReader {
 
 	private void resumeToInd() {
 		try (BufferedReader bf = new BufferedReader(new FileReader(jsonFile))) {
+			int jind = 1;
 			String line = bf.readLine();
 			while (line != null) {
-				JSONObject jo = new JSONObject(line);
-				targetCsvInd = jo.getInt("csv_ind")+1;
-				line = bf.readLine();
+				try {
+					JSONObject jo = new JSONObject(line);
+					targetCsvInd = jo.getInt("csv_ind") + 1;
+					line = bf.readLine();
+					jind++;
+				} catch (JSONException je) {
+					logger.error("Error json parsing at file:" + jsonFile + " line:" + jind + " txt:" + line, je);
+					throw je;
+				}
 			}
 		} catch (IOException e) {
-			targetCsvInd=0;
-			logger.error("Resuming failed after csv_ind:"+targetCsvInd, e);
+			targetCsvInd = 0;
+			logger.error("Resuming failed after csv_ind:" + targetCsvInd, e);
 		}
 	}
 

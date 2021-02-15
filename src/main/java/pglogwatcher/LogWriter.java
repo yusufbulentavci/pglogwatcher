@@ -77,6 +77,7 @@ public class LogWriter {
 		try {
 			this.fileWriter.write(ll.toJson(jsonFileName).toString());
 			this.fileWriter.write(System.lineSeparator());
+			this.fileWriter.flush();
 
 			if (logger.isDebugEnabled()) {
 				logger.debug(ll.toString());

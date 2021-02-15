@@ -11,7 +11,7 @@ import java.util.Set;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-public class LogDir {
+public class LogDir implements Runnable {
 	static final Logger logger = LogManager.getLogger(LogDir.class.getName());
 
 	File logDir;
@@ -30,10 +30,16 @@ public class LogDir {
 
 	private LogFile logFile;
 
-	public LogDir(String dir, int switchFileCount, int sleepForTailCount) {
-		this.dir = dir;
+	private boolean alive=true;
+
+	public LogDir(ConfDir dir, int switchFileCount, int sleepForTailCount) {
+		this.dir = dir.getPath();
 		this.switchFileCount = switchFileCount;
 		this.sleepForTailCount = sleepForTailCount;
+	}
+
+	protected LogDir(String string, int switchFileCount2, int sleepForTailCount2) {
+		this(new ConfDir(string), switchFileCount2, sleepForTailCount2);
 	}
 
 	protected void init(String dir) {
@@ -41,15 +47,11 @@ public class LogDir {
 
 	}
 
-//	public static void main(String[] args) {
-//		LogDir logDir = new LogDir("/home/rompg/tmp/csv");
-//		logDir.run();
-//	}
-
+	@Override
 	public void run() {
 		logger.info("Starting:" + dir);
 		init(dir);
-		while (true) {
+		while (this.alive) {
 			if (!switchFile(true, false)) {
 				if (switchFileCount != -1 && switchFileCount == 0) {
 					logger.info("Dont wait, leaving...." + this.switchFileCount);
@@ -76,22 +78,7 @@ public class LogDir {
 				logger.info("Ends working on:" + processCsvFileName);
 			}
 		}
-
-//		if (csvList.size() < 2) {
-//			logger.info("Less than 2 file, ignoring");
-//			return;
-//		}
-//		for (int i = 0; i < csvList.size() - 1; i++) {
-//			String csvFile = csvList.get(i);
-//			try {
-//				logger.info("Working on:" + csvFile);
-//				LogFile lf = new LogFile(logDir, csvFile, false);
-//				lf.process();
-//				logger.info("Ends working on:" + csvFile);
-//			} catch (IOException e) {
-//				logger.error("Error in csvFile:" + csvFile, e);
-//			}
-//		}
+		logger.info("Logdir terminating gracefully:"+this.dir);
 	}
 
 	public boolean switchFile(boolean makeChange, boolean error) {
@@ -133,6 +120,12 @@ public class LogDir {
 		if (switchFileCount > 0)
 			switchFileCount--;
 		return true;
+	}
+
+	public void terminate() {
+		this.alive=false;
+		if(logFile!=null)
+			logFile.terminate();
 	}
 
 }

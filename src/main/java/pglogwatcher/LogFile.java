@@ -7,6 +7,8 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import jdk.internal.org.jline.reader.impl.history.DefaultHistory;
+
 public class LogFile {
 	static final Logger logger = LogManager.getLogger(LogFile.class.getName());
 
@@ -25,6 +27,8 @@ public class LogFile {
 
 	protected boolean error=false;
 
+	private LogCsvReader reader;
+
 	public LogFile(File logDir, String csvFile, int sleepForTailCount) {
 		this.logDir = logDir;
 		this.csvFile = csvFile;
@@ -37,7 +41,7 @@ public class LogFile {
 		this.f = new File(logDir, csvFile);
 		this.logWriter = new LogWriter(logDir, jsonFile, csvFile);
 
-		LogCsvReader reader = new LogCsvReader(f, new File(logDir, jsonFile), new LogTailListener() {
+		this.reader = new LogCsvReader(f, new File(logDir, jsonFile), new LogTailListener() {
 			PgConnection using = null;
 
 			@Override
@@ -56,7 +60,7 @@ public class LogFile {
 
 			@Override
 			public void fileErrorModified(LogCsvReader logCsvReader) {
-				logger.error("RR");
+				logger.error("LogFile file modified:"+LogFile.this.csvFile);
 				LogFile.this.error = true;
 				LogLine ll=new LogLine(logCsvReader.csvInd, "ERROR", "LOG_CSV_PARSE", "csv file modified");
 				processNoSession(ll);
@@ -64,7 +68,7 @@ public class LogFile {
 
 			@Override
 			public void error(LogCsvReader logCsvReader, String string, Exception e) {
-				logger.error("RR:" + string, e);
+				logger.error("LogFile error:"+LogFile.this.csvFile+" Msg:"+string, e);
 				LogFile.this.error = true;
 				LogLine ll=new LogLine(logCsvReader.csvInd, "ERROR", "LOG_CSV_PARSE", string);
 				processNoSession(ll);
@@ -144,6 +148,12 @@ public class LogFile {
 
 	public void done() {
 		logWriter.done();
+	}
+
+	public void terminate() {
+		if(this.reader!=null) {
+			this.reader.terminate();
+		}
 	}
 
 }
