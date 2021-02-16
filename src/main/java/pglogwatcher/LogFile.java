@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import jdk.internal.org.jline.reader.impl.history.DefaultHistory;
 import net.nbug.hexprobe.server.telnet.EasyTerminal;
 
 public class LogFile {

@@ -7,10 +7,14 @@ fi
 
 cp -a pglogwatcher target/
 
+cd target
+
 echo "Copy jar to install directory"
-cp target/pglogwatcher-jar-with-dependencies.jar target/pglogwatcher
+cp pglogwatcher-jar-with-dependencies.jar pglogwatcher
 
 echo "Creating package file target/pglogwatcher-install.tar.gz"
-tar -zcvf target/pglogwatcher-install.tar.gz target/pglogwatcher
+tar -zcvf pglogwatcher-install.tar.gz pglogwatcher
+
+cd ..
 
 echo "Done"

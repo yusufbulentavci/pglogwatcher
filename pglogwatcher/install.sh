@@ -1,12 +1,12 @@
 #!/bin/bash
 	
-if [ ! -d "/etc/pglogwatcher.ini" ]
+if [ -f "/etc/pglogwatcher.ini" ]
 	then
+		echo "/etc/pglogwatcher.ini file exists, not modified"
+	else
 		cp pglogwatcher.ini /etc/
 		chown postgres:postgres /etc/pglogwatcher.ini
 		echo "/etc/pglogwatcher.ini file created"
-	else
-		echo "/etc/pglogwatcher.ini file exists, not modified"
 fi
 
 if [ -d "/opt/pglogwatcher" ]

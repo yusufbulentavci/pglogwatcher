@@ -40,26 +40,26 @@ public class LogCsvReader {
 		this.csvFile = csvFile;
 		this.jsonFile = jsonFile;
 		this.tailer = tailer;
-		status="init";
+		status = "init";
 	}
 
 	public void run() {
 		try {
-			status="run";
+			status = "run";
 
 			if (jsonFile.exists()) {
-				status="resume";
+				status = "resume";
 				resumeToInd();
 			}
 
 			while (keepRunning) {
 				try {
-					status="wait tail";
+					status = "wait tail";
 					Thread.sleep(_updateInterval);
 				} catch (Exception e) {
 					continue;
 				}
-				status="run";
+				status = "run";
 				long len = csvFile.length();
 
 				if (len < _filePointer) {
@@ -76,9 +76,9 @@ public class LogCsvReader {
 
 						String[] dd = readCsvLine(reader);
 						while (dd != null) {
-							if (csvInd == targetCsvInd) {
+							if (csvInd >= targetCsvInd) {
 								this.tailer.appendCsv(this, dd);
-								this.targetCsvInd++;
+								this.targetCsvInd = csvInd;
 							}
 							dd = readCsvLine(reader);
 						}
@@ -122,13 +122,13 @@ public class LogCsvReader {
 
 	public void terminate() {
 		this.keepRunning = false;
-		status="terminate";
+		status = "terminate";
 	}
 
 	public void status(EasyTerminal terminal) throws IOException {
-		terminal.writeLine("CsvReader, ind"+csvInd);
-		terminal.writeLine("targetInd"+targetCsvInd);
-		terminal.writeLine("status:"+status);
+		terminal.writeLine("CsvReader, ind:" + csvInd);
+		terminal.writeLine("targetInd:" + targetCsvInd);
+		terminal.writeLine("status:" + status);
 	}
 
 }
