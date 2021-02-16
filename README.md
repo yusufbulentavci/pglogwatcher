@@ -16,6 +16,7 @@ pglogwatcher service for linux systems
 - Download and extract pglogwatcher-install.tar.gz
 - Run install.sh in pglogwatcher directory
 - Service is ready start, before starting let's configure
+- Service runs with postgres user
 
 # configuration
 In postgresql.conf
