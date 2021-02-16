@@ -3,7 +3,7 @@ Description=Postgresql Log Watcher
 
 [Service]
 WorkingDirectory=/tmp
-ExecStart=java -cp /var/lib/pgsql/pglogwatcher-jar-with-dependencies.jar pglogwatcher.Main
+ExecStart=java -cp /opt/pglogwatcher/pglogwatcher-jar-with-dependencies.jar pglogwatcher.Main
 User=postgres
 Type=simple
 Restart=on-failure

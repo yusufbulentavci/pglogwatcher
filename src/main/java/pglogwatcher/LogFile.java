@@ -1,6 +1,7 @@
 package pglogwatcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import jdk.internal.org.jline.reader.impl.history.DefaultHistory;
+import net.nbug.hexprobe.server.telnet.EasyTerminal;
 
 public class LogFile {
 	static final Logger logger = LogManager.getLogger(LogFile.class.getName());
@@ -28,8 +30,10 @@ public class LogFile {
 	protected boolean error=false;
 
 	private LogCsvReader reader;
+	String status;
 
 	public LogFile(File logDir, String csvFile, int sleepForTailCount) {
+		status="init";
 		this.logDir = logDir;
 		this.csvFile = csvFile;
 		this.jsonFile = csvFile + ".json";
@@ -38,12 +42,12 @@ public class LogFile {
 
 	void process(final DirState dirState) {
 
+		status="processing";
 		this.f = new File(logDir, csvFile);
 		this.logWriter = new LogWriter(logDir, jsonFile, csvFile);
 
 		this.reader = new LogCsvReader(f, new File(logDir, jsonFile), new LogTailListener() {
 			PgConnection using = null;
-
 			@Override
 			public void beforeSleeping(LogCsvReader logCsvReader) {
 				if (sleepForTailCount == 0) {
@@ -96,43 +100,6 @@ public class LogFile {
 		});
 		reader.run();
 		processEndOfFile();
-
-//		File jf = new File(logDir, jsonFile);
-
-//		try (CSVReader reader = new CSVReader(new FileReader(f))) {
-//			while(true) {
-//				try {
-//					csvLine++;
-//					String[] fields=reader.readNext();
-//					if(fields==null) {
-//						processEndOfFile();
-//						break;
-//					}
-////					System.out.println(Arrays.toString(fields));
-//					LogLine ll=new LogLine(fields);
-//					if(ll.session_id!=null) {
-//						ll.session_id=ll.session_id.trim();
-//						if(ll.session_id.length()>0) {
-//							if(using==null || !using.sessionId.equals(ll.session_id)) {
-//								using=connections.get(ll.session_id);
-//							}
-//							if(using==null) {
-//								using=new PgConnection(logWriter, ll);
-//								connections.put(ll.session_id, using);
-//							}
-//							using.process(ll);
-//							continue;
-//						}
-//					}
-//					processNoSession(ll);
-//					
-//				} catch (Exception e) {
-//					logger.error("Error while processing file:"+f.toString(), e);
-//				}
-//				
-//			}
-//			
-//		}
 	}
 
 	private void processEndOfFile() {
@@ -148,11 +115,22 @@ public class LogFile {
 
 	public void done() {
 		logWriter.done();
+		status="done";
 	}
 
 	public void terminate() {
 		if(this.reader!=null) {
 			this.reader.terminate();
+		}
+		status="terminate";
+	}
+
+	public void status(EasyTerminal terminal) throws IOException {
+		terminal.writeLine("LogFile:"+csvFile);
+		terminal.writeLine("jsonFile:"+jsonFile);
+		terminal.writeLine("status:"+status);
+		if(reader!=null) {
+			reader.status(terminal);
 		}
 	}
 

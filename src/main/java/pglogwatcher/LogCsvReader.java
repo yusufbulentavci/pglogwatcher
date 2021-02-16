@@ -17,6 +17,8 @@ import org.json.JSONObject;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
+import net.nbug.hexprobe.server.telnet.EasyTerminal;
+
 public class LogCsvReader {
 
 	static final Logger logger = LogManager.getLogger(LogCsvReader.class.getName());
@@ -32,26 +34,32 @@ public class LogCsvReader {
 	private File jsonFile;
 
 	private int targetCsvInd;
+	private String status;
 
 	public LogCsvReader(File csvFile, File jsonFile, LogTailListener tailer) {
 		this.csvFile = csvFile;
 		this.jsonFile = jsonFile;
 		this.tailer = tailer;
+		status="init";
 	}
 
 	public void run() {
 		try {
+			status="run";
 
 			if (jsonFile.exists()) {
+				status="resume";
 				resumeToInd();
 			}
 
 			while (keepRunning) {
 				try {
+					status="wait tail";
 					Thread.sleep(_updateInterval);
 				} catch (Exception e) {
 					continue;
 				}
+				status="run";
 				long len = csvFile.length();
 
 				if (len < _filePointer) {
@@ -114,6 +122,13 @@ public class LogCsvReader {
 
 	public void terminate() {
 		this.keepRunning = false;
+		status="terminate";
+	}
+
+	public void status(EasyTerminal terminal) throws IOException {
+		terminal.writeLine("CsvReader, ind"+csvInd);
+		terminal.writeLine("targetInd"+targetCsvInd);
+		terminal.writeLine("status:"+status);
 	}
 
 }

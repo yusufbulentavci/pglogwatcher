@@ -1,12 +1,15 @@
 package pglogwatcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import net.nbug.hexprobe.server.telnet.EasyTerminal;
 
 /**
  * Hello world!
@@ -17,10 +20,21 @@ public class Main {
 	private List<LogDir> runningDirs=new ArrayList<>();
 	private List<Thread> runningThreads=new ArrayList<>();
 
+	private static Main one;
 	public static void main(String[] args) {
-		Main main=new Main();
-		main.mainIn(args);
+		one = new Main();
+		one.mainIn(args);
 	}
+	
+	public static Main one() {
+		return one;
+	}
+	public void status(EasyTerminal terminal) throws IOException {
+		for (LogDir it : runningDirs) {
+			it.status(terminal);
+		}
+	}
+	
 	protected void shutdownHook() {
 		logger.info("Shutdown signal detected");
         for (LogDir logDir : runningDirs) {
@@ -29,9 +43,16 @@ public class Main {
         for(Thread t: runningThreads) {
         	t.interrupt();
         }
+        Telnet.terminate();
 	}
 	
-	public void mainIn(String[] args) {
+	public void mainIn(String[] args)  {
+		one=this;
+		try {
+			Telnet.start();
+		} catch (IOException e1) {
+			logger.error("Failed to start telnet server", e1);
+		}
 		
 		Runtime.getRuntime().addShutdownHook(new Thread()
         {

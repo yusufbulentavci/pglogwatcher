@@ -2,6 +2,7 @@ package pglogwatcher;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,6 +11,8 @@ import java.util.Set;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import net.nbug.hexprobe.server.telnet.EasyTerminal;
 
 public class LogDir implements Runnable {
 	static final Logger logger = LogManager.getLogger(LogDir.class.getName());
@@ -31,11 +34,14 @@ public class LogDir implements Runnable {
 	private LogFile logFile;
 
 	private boolean alive=true;
+	
+	private String status;
 
 	public LogDir(ConfDir dir, int switchFileCount, int sleepForTailCount) {
 		this.dir = dir.getPath();
 		this.switchFileCount = switchFileCount;
 		this.sleepForTailCount = sleepForTailCount;
+		status="Init";
 	}
 
 	protected LogDir(String string, int switchFileCount2, int sleepForTailCount2) {
@@ -59,12 +65,14 @@ public class LogDir implements Runnable {
 				}
 
 				try {
+					status="waiting csv file";
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 				}
 				continue;
 			}
 			if (processCsvFileName != null) {
+				status="processing:"+processCsvFileName;
 
 				logger.info("Working on:" + processCsvFileName);
 				this.logFile = new LogFile(logDir, processCsvFileName, sleepForTailCount);
@@ -123,9 +131,18 @@ public class LogDir implements Runnable {
 	}
 
 	public void terminate() {
+		status="terminating";
 		this.alive=false;
 		if(logFile!=null)
 			logFile.terminate();
+	}
+
+	public void status(EasyTerminal terminal) throws IOException {
+		terminal.writeLine("LogDir:"+this.dir);
+		terminal.writeLine(status);
+		if(logFile!=null) {
+			logFile.status(terminal);
+		}
 	}
 
 }

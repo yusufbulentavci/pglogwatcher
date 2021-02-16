@@ -1,6 +1,6 @@
 #!/bin/bash
 	
-if [! -d "/etc/pglogwatcher.ini" ]
+if [ ! -d "/etc/pglogwatcher.ini" ]
 	then
 		cp pglogwatcher.ini /etc/
 		chown postgres:postgres /etc/pglogwatcher.ini
@@ -21,7 +21,7 @@ echo "/opt/pglogwatcher directory created"
 cp pglogwatcher-jar-with-dependencies.jar /opt/pglogwatcher
 chown -R postgres:postgres /opt/pglogwatcher
 
-if [! -d "/var/log/pglogwatcher" ]
+if [ ! -d "/var/log/pglogwatcher" ]
 	then
 		mkdir /var/log/pglogwatcher
 		chown postgres:postgres /var/log/pglogwatcher

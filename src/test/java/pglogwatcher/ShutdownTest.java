@@ -53,7 +53,7 @@ public class ShutdownTest extends ScenarioTest {
 		main.mainIn(new String[]{"--dir=/tmp/tail"});
 		
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(20000);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
