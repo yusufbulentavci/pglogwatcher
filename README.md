@@ -1,14 +1,20 @@
 # pglogwatcher
 pglogwatcher service for linux systems
 
--process postgresql logs in csv format
--convert csv lines into json in different file
+.process postgresql logs in csv format
+.convert csv lines into json in different file
 -json namespace is compatible with elastic stack
+
 -rollover; keeps track of new csv file, rollover when needed
+
 -online; tails csv file and process new csv lines
+
 -duration; extract duration value as a json key
+
 -summarizes; follow session and merges parse-bind-command-command csv line into one json line with extra duration parameters.
+
 -virtual session; adds virtual session paramter, 'discard all' increases virtual session id
+
 -telnet terminal to monitor
 
 # installation
