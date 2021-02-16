@@ -11,13 +11,24 @@ import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.attribute.GroupPrincipal;
+import java.nio.file.attribute.PosixFileAttributeView;
+import java.nio.file.attribute.UserPrincipal;
+import java.nio.file.attribute.UserPrincipalLookupService;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class ExtraFileUtils {
+	static final Logger logger = LogManager.getLogger(ExtraFileUtils.class.getName());
 	public static boolean copyFile(final File toCopy, final File destFile) {
 		try {
 			return ExtraFileUtils.copyStream(new FileInputStream(toCopy), new FileOutputStream(destFile));
@@ -122,5 +133,19 @@ public class ExtraFileUtils {
 	public static void main(String[] args) throws MalformedURLException {
 //		System.out.println(FileUtils.class.getResource("/log4j.properties"));
 //		copyResourcesRecursively(new URL(FileUtils.class.getResource("/csv").toString()), new File("/tmp"));
+	}
+	
+	public static void chown(String f, String usr, String grp) {
+		Path p = new File(f).toPath();
+		try {
+			UserPrincipalLookupService lookupService = FileSystems.getDefault().getUserPrincipalLookupService();
+			GroupPrincipal group = lookupService.lookupPrincipalByGroupName(grp);
+			UserPrincipal user = lookupService.lookupPrincipalByName(usr);
+			Files.getFileAttributeView(p, PosixFileAttributeView.class, LinkOption.NOFOLLOW_LINKS).setOwner(user);
+			Files.getFileAttributeView(p, PosixFileAttributeView.class, LinkOption.NOFOLLOW_LINKS).setGroup(group);
+		} catch (IOException e) {
+			logger.error("Failed to chwon:"+f, e);
+			throw new RuntimeException(e);
+		}
 	}
 }
