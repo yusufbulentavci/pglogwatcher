@@ -74,16 +74,15 @@ public class LogCsvReader {
 						InputStream is = Channels.newInputStream(raf.getChannel());
 						CSVReader reader = new CSVReader(new InputStreamReader(is));
 
-						String[] dd = readCsvLine(reader);
+						String[] dd = readCsvLine(raf, reader);
 						while (dd != null) {
 							if (csvInd >= targetCsvInd) {
 								this.tailer.appendCsv(this, dd);
 								this.targetCsvInd = csvInd;
 							}
-							dd = readCsvLine(reader);
+							dd = readCsvLine(raf, reader);
 						}
 
-						_filePointer = raf.getFilePointer();
 					}
 				}
 				this.tailer.beforeSleeping(this);
@@ -94,9 +93,24 @@ public class LogCsvReader {
 		// dispose();
 	}
 
-	protected String[] readCsvLine(CSVReader reader) throws CsvValidationException, IOException {
-		csvInd++;
-		return reader.readNext();
+	protected String[] readCsvLine(RandomAccessFile raf, CSVReader reader) {
+
+		String[] ret = null;
+		for (int i = 0; i < 1000 && keepRunning; i++) {
+			try {
+				ret = reader.readNext();
+				csvInd++;
+				_filePointer = raf.getFilePointer();
+				return ret;
+			} catch (CsvValidationException | IOException e) {
+				try {
+					raf.seek(_filePointer);
+				} catch (IOException e1) {
+				}
+			}
+		}
+		return ret;
+
 	}
 
 	private void resumeToInd() {
