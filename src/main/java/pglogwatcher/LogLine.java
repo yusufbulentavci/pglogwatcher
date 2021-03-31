@@ -40,6 +40,7 @@ public class LogLine {
 	Integer csvInd;
 
 	String tz;
+	Boolean unix_socket;
 
 	private String connection_from_port;
 	
@@ -79,12 +80,16 @@ public class LogLine {
 		process_id = parseInt(record[3]);
 		connection_from = nul(record[4]);
 		if (connection_from != null) {
-			String[] dd = connection_from.split(":");
-			connection_from = dd[0];
-			if (dd.length > 1) {
-				connection_from_port = dd[1];
-			} else {
-				connection_from_port = "0";
+			if(connection_from.equals("[local]")) {
+				unix_socket=true;
+			}else {
+				String[] dd = connection_from.split(":");
+				connection_from = dd[0];
+				if (dd.length > 1) {
+					connection_from_port = dd[1];
+				} else {
+					connection_from_port = "0";
+				}
 			}
 		}
 		session_id = nul(record[5]);
@@ -241,6 +246,10 @@ public class LogLine {
 		if (this.virtual_session_id != null) {
 			ret.put("virtual_session_id", virtual_session_id);
 		}
+		if(this.unix_socket!=null) {
+			ret.put("unix_socket", unix_socket);
+		}
+		
 		if(tz!=null)
 			ret.put("postgresql.log.timezone", tz);
 
@@ -293,8 +302,8 @@ public class LogLine {
 				+ internal_query + ", internal_query_pos=" + internal_query_pos + ", context=" + context + ", query="
 				+ query + ", query_pos=" + query_pos + ", location=" + location + ", application_name="
 				+ application_name + ", duration=" + duration + ", bindDur=" + bindDur + ", parseDur=" + parseDur
-				+ ", virtual_session_id=" + virtual_session_id + ", csvInd=" + csvInd + ", tz=" + tz
-				+ ", connection_from_port=" + connection_from_port + "]";
+				+ ", virtual_session_id=" + virtual_session_id + ", csvInd=" + csvInd + ", tz=" + tz + ", unix_socket="
+				+ unix_socket + ", connection_from_port=" + connection_from_port + "]";
 	}
 
 }

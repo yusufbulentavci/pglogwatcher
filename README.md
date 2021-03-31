@@ -48,3 +48,6 @@ log file /var/log/pglogwatcher/pglogwatcher.log
 >status
 >exit
 ```
+# History
+1.2.0
+unix_socket added to json. If client_connection came as [local] client.ip will be null and unix_socket will be true
