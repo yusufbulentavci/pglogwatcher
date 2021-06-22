@@ -114,6 +114,7 @@ public class LogLine {
 		if (message != null && message.startsWith("duration:")) {
 //			message.indexOf(" )
 			this.duration = parseDuration(message);
+			System.out.println(message+"===>"+duration);
 
 		}
 	}
@@ -234,14 +235,15 @@ public class LogLine {
 			ret.put("application_name", this.application_name);
 
 		if (this.duration != null) {
-			ret.put("duration", duration);
+			System.out.println("->>>>"+duration.doubleValue());
+			ret.put("duration", duration.doubleValue());
 		}
 
 		if (this.bindDur != null) {
-			ret.put("bind_duration", bindDur);
+			ret.put("bind_duration", bindDur.doubleValue());
 		}
 		if (this.parseDur != null) {
-			ret.put("parse_duration", parseDur);
+			ret.put("parse_duration", parseDur.doubleValue());
 		}
 		if (this.virtual_session_id != null) {
 			ret.put("virtual_session_id", virtual_session_id);
@@ -273,7 +275,7 @@ public class LogLine {
 		if (parseDur != null)
 			duration.add(parseDur);
 
-		duration = durInSec(duration);
+//		duration = durInSec(duration);
 
 		this.message = message;
 	}
