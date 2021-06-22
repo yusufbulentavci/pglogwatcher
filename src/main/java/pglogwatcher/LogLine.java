@@ -278,13 +278,13 @@ public class LogLine {
 		this.message = message;
 	}
 
-	static BigDecimal yuz = new BigDecimal(100);
+	static BigDecimal bin = new BigDecimal(1000);
 	static {
-		yuz.setScale(4);
+		bin.setScale(4);
 	}
 
 	protected BigDecimal durInSec(BigDecimal dur) {
-		return dur.divide(yuz);
+		return dur.divide(bin);
 	}
 
 	public BigDecimal getDuration() {
