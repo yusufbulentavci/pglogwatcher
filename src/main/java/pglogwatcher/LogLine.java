@@ -43,12 +43,14 @@ public class LogLine {
 	Boolean unix_socket;
 
 	private String connection_from_port;
-	
+
+	private String bindDetail;
+
 	public LogLine(Integer csvInd, String error_severity, String command_tag, String message) {
-		this.csvInd=csvInd;
-		this.error_severity=error_severity;
-		this.command_tag=command_tag;
-		this.message=message;
+		this.csvInd = csvInd;
+		this.error_severity = error_severity;
+		this.command_tag = command_tag;
+		this.message = message;
 	}
 
 	// 2021-02-08 10:31:38.693
@@ -80,9 +82,9 @@ public class LogLine {
 		process_id = parseInt(record[3]);
 		connection_from = nul(record[4]);
 		if (connection_from != null) {
-			if(connection_from.equals("[local]")) {
-				unix_socket=true;
-			}else {
+			if (connection_from.equals("[local]")) {
+				unix_socket = true;
+			} else {
 				String[] dd = connection_from.split(":");
 				connection_from = dd[0];
 				if (dd.length > 1) {
@@ -114,7 +116,7 @@ public class LogLine {
 		if (message != null && message.startsWith("duration:")) {
 //			message.indexOf(" )
 			this.duration = parseDuration(message);
-	//		System.out.println(message+"===>"+duration);
+			// System.out.println(message+"===>"+duration);
 
 		}
 	}
@@ -242,28 +244,31 @@ public class LogLine {
 		if (this.bindDur != null) {
 			ret.put("bind_duration", bindDur.doubleValue());
 		}
+		if(this.bindDetail!=null) {
+			ret.put("parameters", this.bindDetail);
+		}
 		if (this.parseDur != null) {
 			ret.put("parse_duration", parseDur.doubleValue());
 		}
 		if (this.virtual_session_id != null) {
 			ret.put("virtual_session_id", virtual_session_id);
 		}
-		if(this.unix_socket!=null) {
+		if (this.unix_socket != null) {
 			ret.put("unix_socket", unix_socket);
 		}
-		
-		if(tz!=null)
+
+		if (tz != null)
 			ret.put("postgresql.log.timezone", tz);
 
-		if(csvInd!=null)
+		if (csvInd != null)
 			ret.put("csv_ind", csvInd);
-		
+
 		ret.put("csv", fileName);
 
 		return ret;
 	}
 
-	public void updateDur(BigDecimal bind, BigDecimal parse, String message) {
+	public void updateDur(BigDecimal bind, BigDecimal parse, String message, String bindDetail) {
 		this.bindDur = bind;
 		this.parseDur = parse;
 		if (duration == null) {
@@ -278,6 +283,7 @@ public class LogLine {
 //		duration = durInSec(duration);
 
 		this.message = message;
+		this.bindDetail = bindDetail;
 	}
 
 	static BigDecimal bin = new BigDecimal(1000);
