@@ -114,7 +114,7 @@ public class LogLine {
 		if (message != null && message.startsWith("duration:")) {
 //			message.indexOf(" )
 			this.duration = parseDuration(message);
-			System.out.println(message+"===>"+duration);
+	//		System.out.println(message+"===>"+duration);
 
 		}
 	}
@@ -235,7 +235,7 @@ public class LogLine {
 			ret.put("application_name", this.application_name);
 
 		if (this.duration != null) {
-			System.out.println("->>>>"+duration.doubleValue());
+//			System.out.println("->>>>"+duration.doubleValue());
 			ret.put("duration", duration.doubleValue());
 		}
 
